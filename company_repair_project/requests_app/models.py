@@ -18,9 +18,8 @@ class Request(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     type = models.CharField(verbose_name='Тип заявки', choices=REQUESTS_TYPE_CHOICES, max_length=30)
-    title = models.CharField(verbose_name='Название заявки', max_length=100)
-    description = models.TextField(verbose_name='Описание заявки')
+    title = models.CharField(verbose_name='Название заявки', max_length=100, default='')
+    description = models.TextField(verbose_name='Описание заявки', default='')
     status = models.CharField(verbose_name='Статус заявки', choices=STATUS_CHOICES, max_length=20, default='Открыта')
     customer = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
-    executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Исполнитель', blank=True,
-                                 null=True)
+    executor = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='Исполнитель', blank=True, null=True)

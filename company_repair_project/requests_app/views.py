@@ -5,6 +5,7 @@ from django.views import View
 
 from clients_app.models import Client
 from requests_app.forms import NewRequestForm
+from requests_app.models import Request
 
 
 class CreateRequestView(LoginRequiredMixin, View):
@@ -19,6 +20,25 @@ class CreateRequestView(LoginRequiredMixin, View):
             new_request.customer = Client.objects.get(user=request.user)
             new_request.save()
 
-            return redirect('chat_request')
+            return redirect('list_requests')
         else:
             return render(request, 'create_request.html', {'form': form})
+
+
+class ListRequestsView(LoginRequiredMixin, View):
+    def get(self, request):
+        requests = Request.objects.all()
+        return render(request, 'list_requests.html', {'requests': requests})
+
+
+class RequestDetailView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        chosen_request = Request.objects.get(pk=pk)
+        return render(request, 'request_detail.html', {'request': chosen_request})
+
+
+class DeleteRequestView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        chosen_request = Request.objects.get(pk=pk)
+        chosen_request.delete()
+        return redirect('list_requests')
