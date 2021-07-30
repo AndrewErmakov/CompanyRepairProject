@@ -30,6 +30,15 @@ class CreateRequestView(LoginRequiredMixin, View):
 class ListRequestsView(LoginRequiredMixin, View):
     def get(self, request):
         requests = Request.objects.all()
+
+        status = request.GET.get('status', '')
+        if status:
+            requests = requests.filter(status=status)
+
+        request_type = request.GET.get('type', '')
+        if request_type:
+            requests = requests.filter(type=request_type)
+
         return render(request, 'list_requests.html', {'requests': requests})
 
 
