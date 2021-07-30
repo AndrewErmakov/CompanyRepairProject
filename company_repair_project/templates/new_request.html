@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 
 {% block title %}
-New request
+Создать заявку
 {% endblock title %}
 
 
 {% block content %}
 
-<h1>New request</h1>
-<form method="POST">
-
+<h1>Новая заявка</h1>
+<form method="POST" action="{% url 'create_request' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Создать заявку</button>
 </form>
 {% endblock content %}
