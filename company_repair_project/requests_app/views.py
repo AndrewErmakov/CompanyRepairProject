@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
@@ -31,9 +32,13 @@ class ListRequestsView(LoginRequiredMixin, View):
     def get(self, request):
         requests = Request.objects.all()
 
-        status = request.GET.get('status', '')
-        if status:
-            requests = requests.filter(status=status)
+        status_list = request.GET.getlist('status', [])
+
+        if status_list:
+            status_filters = Q(status=status_list[0])
+            for i in range(1, len(status_list)):
+                status_filters |= Q(status=status_list[i])
+            requests = requests.filter(status_filters)
 
         request_type = request.GET.get('type', '')
         if request_type:
