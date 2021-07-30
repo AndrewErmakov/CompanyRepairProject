@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Страница авторизации
+{% endblock title %}
+
+{% block content %}
+<h1>Страница авторизации</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Войти в аккаунт</button>
+</form>
+
+<a href="{% url 'register' %}">Нет аккаунта?</a>
+
+{% endblock content %}
