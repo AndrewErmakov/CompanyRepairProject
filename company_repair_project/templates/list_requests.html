@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Список заявок
+{% endblock title %}
+
+
+{% block content %}
+
+<h1 align="center">Список заявок</h1>
+{% for request in requests %}
+    <h2>Заявка: {{ request.title }}</h2>
+    <p>Описание: {{ request.description }}</p>
+    <i>Дата: {{ request.creation_date }}</i><br>
+
+    <a href="{% url 'update_request' request.pk %}">Изменить заявку</a><br>
+    <form method="POST" action="{% url 'delete_request' request.pk %}">
+        {% csrf_token %}
+        <button type="submit">Удалить заявку</button>
+    </form>
+
+
+    <hr>
+{% endfor %}
+
+
+{% endblock content %}

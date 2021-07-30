@@ -1,9 +1,9 @@
 from django.urls import path
-from requests_app.views import CreateRequestView, ListRequestsView, RequestDetailView, DeleteRequestView
+from requests_app.views import CreateRequestView, ListRequestsView, RequestUpdateView, DeleteRequestView
 
 urlpatterns = [
     path('create_request/', CreateRequestView.as_view(), name='create_request'),
     path('list_requests/', ListRequestsView.as_view(), name='list_requests'),
-    path('request_detail/<int:pk>/', RequestDetailView.as_view(), name='request_detail'),
+    path('update_request/<int:pk>/', RequestUpdateView.as_view(), name='update_request'),
     path('delete_request/<int:pk>/', DeleteRequestView.as_view(), name='delete_request'),
 ]

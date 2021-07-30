@@ -1,7 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
 from django.views import View
+from django.views.generic import UpdateView
 
 from clients_app.models import Client
 from requests_app.forms import NewRequestForm
@@ -31,10 +33,11 @@ class ListRequestsView(LoginRequiredMixin, View):
         return render(request, 'list_requests.html', {'requests': requests})
 
 
-class RequestDetailView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        chosen_request = Request.objects.get(pk=pk)
-        return render(request, 'request_detail.html', {'request': chosen_request})
+class RequestUpdateView(LoginRequiredMixin, UpdateView):
+    model = Request
+    template_name = 'request_update.html'
+    fields = ['type', 'title', 'description', 'status']
+    success_url = reverse_lazy('list_requests')
 
 
 class DeleteRequestView(LoginRequiredMixin, View):
@@ -42,3 +45,4 @@ class DeleteRequestView(LoginRequiredMixin, View):
         chosen_request = Request.objects.get(pk=pk)
         chosen_request.delete()
         return redirect('list_requests')
+
