@@ -1,3 +1,5 @@
+from functools import reduce
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import render, redirect
@@ -7,6 +9,7 @@ from django.views import View
 from django.views.generic import UpdateView
 
 from clients_app.models import Client
+from requests_app.additional_modules.get_date_separator import get_date_separator
 from requests_app.forms import NewRequestForm
 from requests_app.models import Request
 
@@ -36,13 +39,24 @@ class ListRequestsView(LoginRequiredMixin, View):
 
         if status_list:
             status_filters = Q(status=status_list[0])
+
             for i in range(1, len(status_list)):
                 status_filters |= Q(status=status_list[i])
+
             requests = requests.filter(status_filters)
 
         request_type = request.GET.get('type', '')
         if request_type:
             requests = requests.filter(type=request_type)
+
+        date = request.GET.get('date', '')
+        if date:
+            date_separator = get_date_separator(date)
+            parsed_date = date.split(date_separator)
+            requests = requests.filter(creation_date__year=parsed_date[-1],
+                                       creation_date__month=parsed_date[1],
+                                       creation_date__day=parsed_date[0]
+                                       )
 
         return render(request, 'list_requests.html', {'requests': requests})
 
@@ -59,4 +73,3 @@ class DeleteRequestView(LoginRequiredMixin, View):
         chosen_request = Request.objects.get(pk=pk)
         chosen_request.delete()
         return redirect('list_requests')
-
