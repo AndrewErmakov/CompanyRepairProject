@@ -1,20 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Изменить учетную запись</title>
-</head>
-<body>
-    <h1>Изменить учетную запись</h1>
-    <form method="POST" action="{% url 'update_account'%}">
-        {% csrf_token %}
-        Логин:<input name="username" value="{{ user.username }}" /><br>
-        Имя: <input name="first_name" value="{{ user.first_name }}" /><br>
-        Фамилия: <input name="last_name" value="{{ user.last_name  }}" /><br>
-        Телефон: <input name="phone_number" value="{{ user.client.phone_number }}" /><br>
-        Адрес: <input name="address" value="{{ user.client.address }}" /><br>
+{% extends 'base.html' %}
 
-        <button type="submit">Изменить данные</button>
-    </form>
-</body>
-</html>
+
+{% block title %}
+Изменить учетную запись
+{% endblock title %}
+
+
+{% block content %}
+<h1>Изменить учетную запись</h1>
+<form method="POST" action="{% url 'update_account'%}">
+    {% csrf_token %}
+    Логин:<input name="username" value="{{ user.username }}" /><br>
+    Имя: <input name="first_name" value="{{ user.first_name }}" /><br>
+    Фамилия: <input name="last_name" value="{{ user.last_name  }}" /><br>
+    Телефон: <input name="phone_number" value="{{ user.client.phone_number }}" /><br>
+    Адрес: <input name="address" value="{{ user.client.address }}" /><br>
+
+    <button type="submit">Изменить данные</button>
+</form>
+{% endblock content %}
