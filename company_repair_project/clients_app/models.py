@@ -8,5 +8,5 @@ class Client(models.Model):
     phone_number = models.CharField(max_length=17, verbose_name='Номер телефона для связи')
 
     def __str__(self):
-        return self.user.username
+        return self.user.username + ' id:' + str(self.user.pk)
 
