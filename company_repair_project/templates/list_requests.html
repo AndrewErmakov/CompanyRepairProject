@@ -13,7 +13,7 @@
     <h2>Заявка: {{ request.title }}</h2>
     <p>Тип: {{ request.type }}</p>
     <p>Описание: {{ request.description }}</p>
-    <i>Дата: {{ request.creation_date }}</i><br>
+    <i>Дата: {{ request.creation_at }}</i><br>
     <u>Cтатус: {{ request.status }}</u><br><br>
     <a href="{% url 'update_request' request.pk %}">Изменить заявку</a><br><br><br>
     <form method="POST" action="{% url 'delete_request' request.pk %}">

@@ -1,10 +1,7 @@
-from functools import reduce
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-
 from django.views import View
 from django.views.generic import UpdateView
 
@@ -49,14 +46,22 @@ class ListRequestsView(LoginRequiredMixin, View):
         if request_type:
             requests = requests.filter(type=request_type)
 
+        # filtration on specific date
         date = request.GET.get('date', '')
         if date:
             date_separator = get_date_separator(date)
             parsed_date = date.split(date_separator)
-            requests = requests.filter(creation_date__year=parsed_date[-1],
-                                       creation_date__month=parsed_date[1],
-                                       creation_date__day=parsed_date[0]
+            requests = requests.filter(creation_at__year=parsed_date[-1],
+                                       creation_at__month=parsed_date[1],
+                                       creation_at__day=parsed_date[0]
                                        )
+
+        # filtration by date range (only format "Y-m-d")
+        first_date = request.GET.get('first_date', '')
+        second_date = request.GET.get('second_date', '')
+
+        if first_date and second_date:
+            requests = requests.filter(creation_at__date__range=[first_date, second_date])
 
         return render(request, 'list_requests.html', {'requests': requests})
 

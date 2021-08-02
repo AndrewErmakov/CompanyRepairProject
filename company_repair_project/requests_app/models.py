@@ -16,7 +16,7 @@ class Request(models.Model):
         ('Закрыта', 'Закрыта'),
     ]
 
-    creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    creation_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     type = models.CharField(verbose_name='Тип заявки', choices=REQUESTS_TYPE_CHOICES, max_length=30)
     title = models.CharField(verbose_name='Название заявки', max_length=100, default='')
     description = models.TextField(verbose_name='Описание заявки', default='')
