@@ -5,7 +5,6 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView
 
 from clients_app.forms import ExtendedAccountCreationForm, AdditionalClientInfoForm
 from clients_app.models import Client
@@ -40,6 +39,8 @@ class RegistrationView(View):
 
 
 class DeleteClientAccountView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
     def post(self, request):
         authorized_user = request.user
         logout(request)
@@ -48,6 +49,8 @@ class DeleteClientAccountView(LoginRequiredMixin, View):
 
 
 class UpdateClientAccountView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
     def get(self, request):
         authorized_user = request.user
         return render(request, 'update_account.html', {'user': authorized_user})
@@ -74,3 +77,5 @@ class UpdateClientAccountView(LoginRequiredMixin, View):
         client.save()
 
         return redirect('list_requests')
+
+

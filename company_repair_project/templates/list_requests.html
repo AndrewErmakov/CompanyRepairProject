@@ -10,7 +10,8 @@
 
 <h1 align="center">Список заявок</h1>
 {% for request in requests %}
-    <h2>Заявка: {{ request.title }}</h2>
+    <h2>Заявка {{ request.pk }}: {{ request.title }}</h2>
+    <h4>Заказчик {{ request.customer.user.username }}</h4>
     <p>Тип: {{ request.type }}</p>
     <p>Описание: {{ request.description }}</p>
     <i>Дата: {{ request.creation_at }}</i><br>

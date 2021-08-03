@@ -11,6 +11,7 @@
     {% if user.is_authenticated %}
     <h1>Привет, {{ user.username }}</h1>
     <a href="{% url 'create_request' %}">Создать заявку</a><br>
+    <a href="{% url 'list_requests' %}">Посмотреть заявки</a><br>
     <a href="{% url 'update_account' %}">Изменить аккаунт</a><br>
     <a href="{% url 'logout' %}">Выйти из аккаунта</a>
     <form method="POST" action="{% url 'delete_client' %}">

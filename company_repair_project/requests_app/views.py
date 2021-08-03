@@ -12,6 +12,8 @@ from requests_app.models import Request
 
 
 class CreateRequestView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
     def get(self, request):
         form = NewRequestForm()
         return render(request, 'new_request.html', {'form': form})
@@ -29,9 +31,15 @@ class CreateRequestView(LoginRequiredMixin, View):
 
 
 class ListRequestsView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
     def get(self, request):
         requests = Request.objects.all()
 
+        if not request.user.client.is_worker:
+            requests = requests.filter(customer__user=request.user)
+
+        # filtration on statuses
         status_list = request.GET.getlist('status', [])
 
         if status_list:
@@ -42,6 +50,7 @@ class ListRequestsView(LoginRequiredMixin, View):
 
             requests = requests.filter(status_filters)
 
+        # filtration on request type
         request_type = request.GET.get('type', '')
         if request_type:
             requests = requests.filter(type=request_type)
@@ -67,6 +76,7 @@ class ListRequestsView(LoginRequiredMixin, View):
 
 
 class RequestUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = reverse_lazy('login')
     model = Request
     template_name = 'request_update.html'
     fields = ['type', 'title', 'description', 'status']
@@ -74,6 +84,8 @@ class RequestUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class DeleteRequestView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
     def post(self, request, pk):
         chosen_request = Request.objects.get(pk=pk)
         chosen_request.delete()
