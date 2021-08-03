@@ -15,13 +15,15 @@
     <p>Тип: {{ request.type }}</p>
     <p>Описание: {{ request.description }}</p>
     <i>Дата: {{ request.creation_at }}</i><br>
-    <u>Cтатус: {{ request.status }}</u><br><br>
+    <u>Cтатуc: {{ request.status }}</u><br><br>
+
+    <h1>Исполнитель: {{ request.executor }}</h1>
     <a href="{% url 'update_request' request.pk %}">Изменить заявку</a><br><br><br>
+
     <form method="POST" action="{% url 'delete_request' request.pk %}">
         {% csrf_token %}
         <button type="submit">Удалить заявку</button>
     </form>
-
 
     <hr>
 {% endfor %}

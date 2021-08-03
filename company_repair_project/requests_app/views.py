@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -7,6 +8,7 @@ from django.views.generic import UpdateView
 
 from clients_app.models import Client
 from requests_app.additional_modules.get_date_separator import get_date_separator
+from requests_app.additional_modules.get_random_executor import get_random_executor
 from requests_app.forms import NewRequestForm
 from requests_app.models import Request
 
@@ -22,7 +24,10 @@ class CreateRequestView(LoginRequiredMixin, View):
         form = NewRequestForm(request.POST)
         if form.is_valid():
             new_request = form.save(commit=False)
+
             new_request.customer = Client.objects.get(user=request.user)
+            new_request.executor = Client.objects.get(pk=get_random_executor()).user
+
             new_request.save()
 
             return redirect('list_requests')
@@ -35,6 +40,8 @@ class ListRequestsView(LoginRequiredMixin, View):
 
     def get(self, request):
         requests = Request.objects.all()
+
+        # params = request.GET.params
 
         if not request.user.client.is_worker:
             requests = requests.filter(customer__user=request.user)
