@@ -5,7 +5,9 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import DeleteView
 
+from clients_app.business import ClientManager
 from clients_app.forms import ExtendedAccountCreationForm, AdditionalClientInfoForm
 from clients_app.models import Client
 
@@ -22,29 +24,22 @@ class RegistrationView(View):
         return render(request, 'new_client.html', {'form': form, 'client_info_form': client_info_form})
 
     def post(self, request):
-        form = ExtendedAccountCreationForm(request.POST)
+        user_form = ExtendedAccountCreationForm(request.POST)
         client_info_form = AdditionalClientInfoForm(request.POST)
 
-        if form.is_valid() and client_info_form.is_valid():
-            account = form.save()
-
-            client = client_info_form.save(commit=False)
-            client.user = account
-            client.save()
-
+        if user_form.is_valid() and client_info_form.is_valid():
+            ClientManager().create_client(user_form, client_info_form)
             return redirect('login')
 
         else:
-            return render(request, 'new_client.html', {'form': form, 'client_info_form': client_info_form})
+            return render(request, 'new_client.html', {'form': user_form, 'client_info_form': client_info_form})
 
 
-class DeleteClientAccountView(LoginRequiredMixin, View):
+class DeleteClientAccountView(LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('login')
 
     def post(self, request):
-        authorized_user = request.user
-        logout(request)
-        authorized_user.delete()
+        ClientManager().delete_client(request)
         return redirect('login')
 
 

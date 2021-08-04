@@ -1,14 +1,19 @@
 from django.db.models import Q
 
+from clients_app.models import Client
 from requests_app.additional_modules.get_date_separator import get_date_separator
+from requests_app.additional_modules.get_random_executor import get_random_executor
+from requests_app.models import Request
 
 
 class ManagerRequests:
-    def __init__(self, requests, params, current_user):
-        self.requests = requests
+    def __init__(self, params, current_user):
+        self.requests = Request.objects.all()
         self.params = params
         self.filter_flag = bool(params)
         self.current_user = current_user
+
+
 
     def get_requests_depending_on_user_role(self):
         if not self.current_user.client.is_worker:
@@ -55,3 +60,12 @@ class ManagerRequests:
             self.requests = self.filter_by_specific_date(self.params['date'][0])
 
         return self.requests
+
+
+def create_request(form, current_user):
+    new_request = form.save(commit=False)
+
+    new_request.customer = Client.objects.get(user=current_user)
+    new_request.executor = Client.objects.get(pk=get_random_executor()).user
+
+    new_request.save()
