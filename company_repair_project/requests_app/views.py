@@ -1,12 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import UpdateView
 
 from clients_app.models import Client
-from requests_app.additional_modules.get_date_separator import get_date_separator
 from requests_app.additional_modules.get_random_executor import get_random_executor
 from requests_app.business import ManagerRequests
 from requests_app.forms import NewRequestForm
@@ -40,10 +38,11 @@ class ListRequestsView(LoginRequiredMixin, View):
 
     def get(self, request):
         requests = Request.objects.all()
-        if not request.user.client.is_worker:
-            requests = requests.filter(customer__user=request.user)
 
-        requests_manager = ManagerRequests(requests, dict(request.GET))
+        requests_manager = ManagerRequests(requests, params=dict(request.GET), current_user=request.user)
+
+        # depending on user role get requests
+        requests = requests_manager.get_requests_depending_on_user_role()
 
         if requests_manager.filter_flag:
             requests = requests_manager.get_filtered_requests()

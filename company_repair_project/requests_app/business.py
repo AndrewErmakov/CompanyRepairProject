@@ -4,10 +4,20 @@ from requests_app.additional_modules.get_date_separator import get_date_separato
 
 
 class ManagerRequests:
-    def __init__(self, requests, params):
+    def __init__(self, requests, params, current_user):
         self.requests = requests
         self.params = params
         self.filter_flag = bool(params)
+        self.current_user = current_user
+
+    def get_requests_depending_on_user_role(self):
+        if not self.current_user.client.is_worker:
+            self.requests = self.requests.filter(customer__user=self.current_user)
+
+        else:
+            self.requests = self.requests.filter(executor__user=self.current_user)
+
+        return self.requests
 
     def filter_by_statuses(self, status_list):
         status_filters = Q(status=status_list[0])
@@ -45,5 +55,3 @@ class ManagerRequests:
             self.requests = self.filter_by_specific_date(self.params['date'][0])
 
         return self.requests
-
-
