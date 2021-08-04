@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -9,6 +8,7 @@ from django.views.generic import UpdateView
 from clients_app.models import Client
 from requests_app.additional_modules.get_date_separator import get_date_separator
 from requests_app.additional_modules.get_random_executor import get_random_executor
+from requests_app.business import ManagerRequests
 from requests_app.forms import NewRequestForm
 from requests_app.models import Request
 
@@ -40,44 +40,13 @@ class ListRequestsView(LoginRequiredMixin, View):
 
     def get(self, request):
         requests = Request.objects.all()
-
-        # params = request.GET.params
-
         if not request.user.client.is_worker:
             requests = requests.filter(customer__user=request.user)
 
-        # filtration on statuses
-        status_list = request.GET.getlist('status', [])
+        requests_manager = ManagerRequests(requests, dict(request.GET))
 
-        if status_list:
-            status_filters = Q(status=status_list[0])
-
-            for i in range(1, len(status_list)):
-                status_filters |= Q(status=status_list[i])
-
-            requests = requests.filter(status_filters)
-
-        # filtration on request type
-        request_type = request.GET.get('type', '')
-        if request_type:
-            requests = requests.filter(type=request_type)
-
-        # filtration on specific date
-        date = request.GET.get('date', '')
-        if date:
-            date_separator = get_date_separator(date)
-            parsed_date = date.split(date_separator)
-            requests = requests.filter(creation_at__year=parsed_date[-1],
-                                       creation_at__month=parsed_date[1],
-                                       creation_at__day=parsed_date[0]
-                                       )
-
-        # filtration by date range (only format "Y-m-d")
-        first_date = request.GET.get('first_date', '')
-        second_date = request.GET.get('second_date', '')
-
-        if first_date and second_date:
-            requests = requests.filter(creation_at__date__range=[first_date, second_date])
+        if requests_manager.filter_flag:
+            requests = requests_manager.get_filtered_requests()
 
         return render(request, 'list_requests.html', {'requests': requests})
 
