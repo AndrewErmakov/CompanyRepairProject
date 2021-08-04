@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DeleteView
 
 from clients_app.models import Client
 from requests_app.additional_modules.get_random_executor import get_random_executor
@@ -58,10 +58,7 @@ class RequestUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('list_requests')
 
 
-class DeleteRequestView(LoginRequiredMixin, View):
+class DeleteRequestView(LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('login')
-
-    def post(self, request, pk):
-        chosen_request = Request.objects.get(pk=pk)
-        chosen_request.delete()
-        return redirect('list_requests')
+    model = Request
+    success_url = reverse_lazy('list_requests')
