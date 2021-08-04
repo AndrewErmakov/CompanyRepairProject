@@ -1,4 +1,3 @@
-from django.contrib.auth import logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -9,7 +8,6 @@ from django.views.generic import DeleteView
 
 from clients_app.business import ClientManager
 from clients_app.forms import ExtendedAccountCreationForm, AdditionalClientInfoForm
-from clients_app.models import Client
 
 
 class LoginClientView(LoginView):
@@ -52,24 +50,7 @@ class UpdateClientAccountView(LoginRequiredMixin, View):
 
     def post(self, request):
         authorized_user = request.user
-
-        username = request.POST.get('username')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-
-        phone_number = request.POST.get('phone_number')
-        address = request.POST.get('address')
-
-        authorized_user.username = username
-        authorized_user.first_name = first_name
-        authorized_user.last_name = last_name
-
-        authorized_user.save()
-
-        client = Client.objects.get(user=authorized_user)
-        client.phone_number = phone_number
-        client.address = address
-        client.save()
+        ClientManager().update_client(request, authorized_user)
 
         return redirect('list_requests')
 
